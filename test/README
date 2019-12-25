@@ -1,0 +1,1 @@
+g++ main.cpp -I../src/ ../src/log_stat.cpp ../src/util.cpp ../src/log_manager.cpp
