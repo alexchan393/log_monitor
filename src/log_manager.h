@@ -5,7 +5,7 @@
 #include "util.h"
 #include "log_stat.h"
 
-using namespace std;
+using namespace std; 
 
 class LogManager
 {
