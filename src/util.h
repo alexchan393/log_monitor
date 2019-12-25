@@ -5,6 +5,18 @@
 #include <vector>
 
 using namespace std;
+
+struct Alert
+{
+    enum State
+    {
+        WARNING,
+        RECOVERED
+    };
+    State state;
+    long when;
+};
+
 struct Log
 {
 	string remoteHost;

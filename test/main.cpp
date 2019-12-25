@@ -2,54 +2,56 @@
 #include <assert.h>
 #include <iostream>
 
-void TEST_LOGSTAT()
+void TEST_STAT()
 {
+    bool notCareAlert;
+    Alert notCareObj;
     LogManager logManager(10,1);
     Log log;
     log.date = 2;
     log.section = "abc";
     vector<Interval> expectedResults;
-    logManager.receiveLog(log, expectedResults);
+    logManager.receiveLog(log, expectedResults, notCareAlert, notCareObj);
     assert(expectedResults.empty());
 
     log.date = 2;
     log.section = "jk";
-    logManager.receiveLog(log, expectedResults);
+    logManager.receiveLog(log, expectedResults, notCareAlert, notCareObj);
     assert(expectedResults.empty());
 
     log.date = 5;
     log.section = "abc";
-    logManager.receiveLog(log, expectedResults);
+    logManager.receiveLog(log, expectedResults, notCareAlert, notCareObj);
     assert(expectedResults.empty());
 
     log.date = 5;
     log.section = "jk";
-    logManager.receiveLog(log, expectedResults);
+    logManager.receiveLog(log, expectedResults, notCareAlert, notCareObj);
     assert(expectedResults.empty());
 
     log.date = 9;
     log.section = "abc";
-    logManager.receiveLog(log, expectedResults);
+    logManager.receiveLog(log, expectedResults, notCareAlert, notCareObj);
     assert(expectedResults.empty());
 
     log.date = 10;
     log.section = "xyz";
-    logManager.receiveLog(log, expectedResults);
+    logManager.receiveLog(log, expectedResults, notCareAlert, notCareObj);
     assert(expectedResults.empty());
 
     log.date = 10;
     log.section = "ignored1";
-    logManager.receiveLog(log, expectedResults);
+    logManager.receiveLog(log, expectedResults, notCareAlert, notCareObj);
     assert(expectedResults.empty());
 
     log.date = 10;
     log.section = "ignored2";
-    logManager.receiveLog(log, expectedResults);
+    logManager.receiveLog(log, expectedResults, notCareAlert, notCareObj);
     assert(expectedResults.empty());
 
     log.date = 12;
     log.section = "xyz";
-    logManager.receiveLog(log, expectedResults);
+    logManager.receiveLog(log, expectedResults, notCareAlert, notCareObj);
     assert(expectedResults.size() == 1);
 
     // In the header we hard coded to show the top 3 only
@@ -66,7 +68,7 @@ void TEST_LOGSTAT()
 
     log.date = 25;
     log.section = "xyz";
-    logManager.receiveLog(log, expectedResults);
+    logManager.receiveLog(log, expectedResults, notCareAlert, notCareObj);
     assert(expectedResults.size() == 1);
     assert(expectedResults[0].startDate == 13);
     assert(expectedResults[0].endDate == 23);
@@ -77,7 +79,7 @@ void TEST_LOGSTAT()
 
     log.date = 67;
     log.section = "efg";
-    logManager.receiveLog(log, expectedResults);
+    logManager.receiveLog(log, expectedResults, notCareAlert, notCareObj);
     assert(expectedResults.size() == 4);
     assert(expectedResults[0].startDate == 24);
     assert(expectedResults[0].endDate == 34);
@@ -100,10 +102,83 @@ void TEST_LOGSTAT()
 
     // before size is 9, after is 1. Only date = 67 is left
     assert(logManager.getSize() == 1);
-    cout << "LOGSTAT PASSED" << endl;
+    cout << "STAT PASSED" << endl;
 }
+
+void TEST_ALERT()
+{
+    bool alertIsTriggered; 
+    Alert alert;
+    
+    long START = 2;
+    // 1(log per second), this setup triggers alert at the threshold of 120 logs in 2 mins
+    LogManager logManager(10, 1);
+    Log log;
+    log.date = START;
+    log.section = "abc";
+    vector<Interval> notCareObj;
+
+    int count = 140;
+    while(count != 0)
+    {
+        log.date += 1; // let say 1 request every second
+        log.section = "abc";
+        vector<Interval> notCareObj;
+        logManager.receiveLog(log, notCareObj, alertIsTriggered, alert);
+
+        if(log.date - START == 121)  // then a warning alert triggered at 121 second
+        {
+            assert(alertIsTriggered == true);
+            assert(alert.state == Alert::WARNING);
+        }
+        else
+            assert(alertIsTriggered == false);
+
+        --count;
+    }
+
+    count = 10;
+    while(count != 0)
+    {
+        log.date += 2; // now 1 request every 2 second
+        log.section = "abc";
+        logManager.receiveLog(log, notCareObj, alertIsTriggered, alert);
+
+        if(count == 10) // then an recovery alert triggered immediately
+        {
+            assert(alertIsTriggered == true);
+            assert(alert.state == Alert::RECOVERED);
+        }
+        else
+            assert(alertIsTriggered == false);
+
+        --count;
+    }
+
+    count = 20;
+    while(count != 0)
+    {
+        //now keep log.date; unchanged, to minic all the logs come at the same time
+        log.section = "qwe";
+        logManager.receiveLog(log, notCareObj, alertIsTriggered, alert);
+
+        cout << "count: " << count << endl;
+        if(count == 11) // then a warning alert triggered after it reached the 11th log
+        {
+            assert(alertIsTriggered == true);
+            assert(alert.state == Alert::WARNING);
+        }
+        else
+            assert(alertIsTriggered == false);
+
+        --count;
+    }
+    cout << "ALERT PASSED" << endl;
+}
+
 int main()
 {
-    TEST_LOGSTAT();
+    //TEST_STAT();
+    TEST_ALERT();
     return 0;
 }
