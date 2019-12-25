@@ -12,18 +12,18 @@ static const int UNSET = -1;
 
 class LogStat
 {
-	public:
-		LogStat(int statInterval);
-		void generateStats(const multimap<long, Log>& logs,
-						   vector<Interval>& stats);
-	private:
-		int d_interval;
-		long d_lastEndTime;
-	private:
-		void calculateStat(long start,
-					       long end,
-						   const multimap<long, Log>& logs,
-						   vector<Aggregate>& stat);
+    public:
+        LogStat(int statInterval);
+        void generateStats(const multimap<long, Log>& logs,
+                           vector<Interval>& stats);
+    private:
+        int d_interval;
+        long d_lastEndTime;
+    private:
+        void calculateStat(long start,
+                           long end,
+                           const multimap<long, Log>& logs,
+                           vector<Aggregate>& stat);
 };
 
 #endif

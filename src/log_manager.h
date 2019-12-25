@@ -9,20 +9,20 @@ using namespace std;
 
 class LogManager
 {
-	public:
-		LogManager(int statInterval, 
-				   int alertAverage);
-		void receiveLog(const Log& log,
-						vector<Interval>& stats);
-		int getSize(); // for unit test purpose
+    public:
+        LogManager(int statInterval, 
+                   int alertAverage);
+        void receiveLog(const Log& log,
+                        vector<Interval>& stats);
+        int getSize(); // for unit test purpose
 
-	private:
-		multimap<long, Log> d_logs;
-		LogStat d_logStat;
-		int d_timeToLive;
+    private:
+        multimap<long, Log> d_logs;
+        LogStat d_logStat;
+        int d_timeToLive;
 
-	private:
-		void purgeData();
+    private:
+        void purgeData();
 };
 
 #endif
