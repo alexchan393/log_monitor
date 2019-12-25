@@ -1,7 +1,6 @@
 #include "log_alert.h"
 #include <iostream>
 
-static const int SECOND_IN_MINUTE = 60;
 
 LogAlert::LogAlert(int requestPerSecond)
 :d_requestPerSecond(requestPerSecond),

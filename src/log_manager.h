@@ -12,7 +12,7 @@ class LogManager
 {
     public:
         LogManager(int statInterval, 
-                   int alertAverage);
+                   int alertAveragePerSecond);
         void receiveLog(const Log& log,
                         vector<Interval>& stats,
                         bool& alertTriggered,

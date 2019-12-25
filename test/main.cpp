@@ -6,6 +6,7 @@ void TEST_STAT()
 {
     bool notCareAlert;
     Alert notCareObj;
+    
     LogManager logManager(10,1);
     Log log;
     log.date = 2;
@@ -73,9 +74,7 @@ void TEST_STAT()
     assert(expectedResults[0].startDate == 13);
     assert(expectedResults[0].endDate == 23);
     assert(expectedResults[0].aggregates.empty());
-
-    // before size is 10, after is 8, because date = 2 are purged
-    assert(logManager.getSize() == 8);
+    assert(logManager.getSize() == 10);
 
     log.date = 67;
     log.section = "efg";
@@ -100,8 +99,7 @@ void TEST_STAT()
     assert(expectedResults[3].aggregates[0].section == "efg");
     assert(expectedResults[3].aggregates[0].count == 1);
 
-    // before size is 9, after is 1. Only date = 67 is left
-    assert(logManager.getSize() == 1);
+    assert(logManager.getSize() == 11);
     cout << "STAT PASSED" << endl;
 }
 
@@ -110,7 +108,7 @@ void TEST_ALERT()
     bool alertIsTriggered; 
     Alert alert;
     
-    long START = 2;
+    long START = 0;
     // 1(log per second), this setup triggers alert at the threshold of 120 logs in 2 mins
     LogManager logManager(10, 1);
     Log log;
@@ -130,12 +128,14 @@ void TEST_ALERT()
         {
             assert(alertIsTriggered == true);
             assert(alert.state == Alert::WARNING);
+            assert(alert.when == 121);
         }
         else
             assert(alertIsTriggered == false);
 
         --count;
     }
+    assert(logManager.getSize() == 140);
 
     count = 10;
     while(count != 0)
@@ -148,12 +148,15 @@ void TEST_ALERT()
         {
             assert(alertIsTriggered == true);
             assert(alert.state == Alert::RECOVERED);
+            assert(alert.when == 142);
         }
         else
             assert(alertIsTriggered == false);
 
         --count;
     }
+
+    assert(logManager.getSize() == 150);
 
     count = 20;
     while(count != 0)
@@ -167,18 +170,31 @@ void TEST_ALERT()
         {
             assert(alertIsTriggered == true);
             assert(alert.state == Alert::WARNING);
+            assert(alert.when == 160);
         }
         else
             assert(alertIsTriggered == false);
 
         --count;
     }
+
+    // now there is a log comes in a much later time
+    log.date += 1000;
+    log.section = "qwe";
+    logManager.receiveLog(log, notCareObj, alertIsTriggered, alert);
+    assert(alertIsTriggered == true);
+    assert(alert.state == Alert::RECOVERED);
+    assert(alert.when == 1160);
+
+    // All previous logs were purged because they were 120 seconds older than the most recent one (1160)
+    assert(logManager.getSize() == 1);
+
     cout << "ALERT PASSED" << endl;
 }
 
 int main()
 {
-    //TEST_STAT();
+    TEST_STAT();
     TEST_ALERT();
     return 0;
 }

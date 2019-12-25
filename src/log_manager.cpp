@@ -2,10 +2,15 @@
 #include <iostream>
 
 LogManager::LogManager(int statInterval,
-                       int alertAverage)
+                       int alertAveragePerSecond)
 :d_logStat(statInterval),
-d_logAlert(alertAverage),
-d_timeToLive(statInterval*2)
+d_logAlert(alertAveragePerSecond),
+
+// We pick the max across statInterval (for example: 10 seconds in the spec) and 
+// alert threshold count (for example: 1200 seconds in the spec), then multiply that
+// number by 2, to account for out-of-order log arrival
+d_timeToLive((max(statInterval, 
+                 alertAveragePerSecond*SECOND_IN_MINUTE*WINDOW_IN_MINUTES))*2)
 {
 }
 
@@ -20,7 +25,7 @@ void LogManager::receiveLog(const Log& log,
     d_logs.insert(d_logs.end(), {log.date, log});
     d_logStat.generateStats(d_logs, stats);
     alertTriggered = d_logAlert.generateAlert(d_logs, alert);
-    //purgeData();
+    purgeData();
 }
 
 void LogManager::purgeData()

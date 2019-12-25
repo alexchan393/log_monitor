@@ -8,6 +8,7 @@
 using namespace std;
 
 static const int WINDOW_IN_MINUTES = 2;
+static const int SECOND_IN_MINUTE = 60;
 
 class LogAlert
 {
