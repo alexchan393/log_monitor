@@ -23,7 +23,8 @@ class LogStat
         void calculateStat(long start,
                            long end,
                            const multimap<long, Log>& logs,
-                           vector<Aggregate>& stat);
+                           vector<Aggregate>& stat, 
+                           int& totalCount);
 };
 
 #endif

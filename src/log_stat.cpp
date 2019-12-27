@@ -35,7 +35,9 @@ void LogStat::generateStats(const multimap<long, Log>& logs,
             v.startDate = d_lastEndTime;
             v.endDate = endTime;
             vector<Aggregate> stat;
-            calculateStat(d_lastEndTime, endTime, logs, stat);
+
+            calculateStat(d_lastEndTime, endTime, logs, stat, v.totalCount);
+
             v.aggregates = stat;
             stats.push_back(v);	
 
@@ -48,10 +50,10 @@ void LogStat::generateStats(const multimap<long, Log>& logs,
 void LogStat::calculateStat(long start,
                             long end,
                             const multimap<long, Log>& logs,
-                            vector<Aggregate>& stat)
+                            vector<Aggregate>& stat,
+                            int& totalCount)
 {
-    cout << start << ":" << end << endl;
-
+    totalCount = 0;
     unordered_map<string, int> sectionAndCounts;
 
     // both lower_bound / upper_bound do binary search hence they are logN
@@ -62,9 +64,10 @@ void LogStat::calculateStat(long start,
 
     for(auto itr = beginIter; itr != endIter; ++itr)
     {
-        cout << "itr: " << itr->first << " : " 
-            << itr->second.date << endl;
+      //  cout << "itr: " << itr->first << " : " 
+        //    << itr->second.date << endl;
         sectionAndCounts[itr->second.section]++;
+        ++totalCount;
     }
 
     // Use a min heap so we can get NlogK for getting the top K hits section

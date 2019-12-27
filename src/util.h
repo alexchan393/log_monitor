@@ -53,6 +53,7 @@ struct Interval
 	long startDate;
 	long endDate;
 	vector<Aggregate> aggregates;
+    int totalCount;
 };
 
 

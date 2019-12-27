@@ -2,14 +2,50 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <ctime>
+#include <iomanip>
+
+void printResult(const vector<Interval>& stats, bool alertIsTriggered, const Alert& alert)
+{
+    ////////////////////// STATISTIC //////////////////////
+    if(!stats.empty())
+        cout << "\n\nStatistic " << endl;
+    for(int x = 0; x < stats.size(); ++ x)
+    {
+        time_t secsSinceEpoch = stats[x].startDate;
+        cout << left << setw(10) << "start at " << put_time(localtime(&secsSinceEpoch), "%Y/%m/%d %T") << endl;
+
+        secsSinceEpoch = stats[x].endDate;
+        cout << left << setw(10) << "end at   " << put_time(localtime(&secsSinceEpoch), "%Y/%m/%d %T") << endl;
+        cout << left << setw(10) << "total hit " << stats[x].totalCount << endl;
+        cout << left << setw(30) << "Hit Rank " << endl;
+        for(int y = 0; y < stats[x].aggregates.size(); ++ y)
+        {
+            cout << left << setw(30) << stats[x].aggregates[y].section << " : " << stats[x].aggregates[y].count << endl;
+        }
+    }
+
+
+    ////////////////////// ALERT //////////////////////
+    if(alertIsTriggered)
+    {
+        if(alert.state == Alert::WARNING)
+            cout << "\n\n!!!!!!! Warning Alert Triggered !!!!!!!" << endl;
+        else
+            cout << "\n\n======= Recovery Alert Triggered ======" << endl;
+
+        time_t secsSinceEpoch = alert.when;
+        cout << "at " << put_time(localtime(&secsSinceEpoch), "%Y/%m/%d %T") << endl;
+    }
+}
 
 void readLog(const string& logFileName)
 {
     bool headerRead = false;
 
-    int statInterval = 10;
+    int statIntervalInSecond = 10;
     int alertRequestPerSecond = 10;
-    LogManager logManager(statInterval, alertRequestPerSecond); 
+    LogManager logManager(statIntervalInSecond, alertRequestPerSecond); 
 
     ifstream source;
     source.open(logFileName);
@@ -21,6 +57,7 @@ void readLog(const string& logFileName)
             headerRead = true;
             continue;
         }
+
         stringstream ss(line);
         string t;
         vector<string> tokens;
@@ -31,7 +68,7 @@ void readLog(const string& logFileName)
         if(tokens.size() != 7) 
         {
             cerr << "size mismatch: " << ss.str() << endl;
-            return;
+            continue;
         }
         else
         {
@@ -42,15 +79,17 @@ void readLog(const string& logFileName)
             Alert alert;
 
             logManager.receiveLog(log, stats, alertIsTriggered, alert);
+
+            printResult(stats, alertIsTriggered, alert);
         }
     }
 }
 
 int main(int argc, char* argv[]) {
     if(argc != 2) {
-        std << "Usage: " << argv[0] 
-            << " log.txt" << endl;
-        std << "Reading from standard input..." << endl;
+        cout << "Usage: " << argv[0] 
+             << " log.txt" << endl;
+        return -1;
     }
     else
     {

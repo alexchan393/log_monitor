@@ -27,12 +27,12 @@ bool LogAlert::generateAlert(const multimap<long, Log>& logs,
     {
         currentNumRequest += 1;
     }
-
+/*
     cout << "map size: " << logs.size() << endl;
     cout << "start: " << start << "---" << "mostRecentLogDate: " << mostRecentLogDate << endl;
     cout << "currentNumRequest: " << currentNumRequest << endl;
     cout << "TotalNumRequestThreshold: " << totalNumRequestThreshold << endl;
-
+*/
     if(!d_alertIsSet && currentNumRequest > totalNumRequestThreshold)
     {
         alert.state = Alert::WARNING;
@@ -48,6 +48,6 @@ bool LogAlert::generateAlert(const multimap<long, Log>& logs,
         return true;
     }
 
-    cout << "nothing happen" << endl;
+ //   cout << "nothing happen" << endl;
     return false;
 }

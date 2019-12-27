@@ -65,6 +65,7 @@ void TEST_STAT()
     assert(expectedResults[0].aggregates[1].count == 2);
     assert(expectedResults[0].aggregates[2].section == "xyz");
     assert(expectedResults[0].aggregates[2].count == 2);
+    assert(expectedResults[0].totalCount == 9);
     assert(logManager.getSize() == 9);
 
     log.date = 25;
@@ -74,6 +75,7 @@ void TEST_STAT()
     assert(expectedResults[0].startDate == 13);
     assert(expectedResults[0].endDate == 23);
     assert(expectedResults[0].aggregates.empty());
+    assert(expectedResults[0].totalCount == 0);
     assert(logManager.getSize() == 10);
 
     log.date = 67;
@@ -85,19 +87,23 @@ void TEST_STAT()
     assert(expectedResults[0].aggregates.size() == 1);
     assert(expectedResults[0].aggregates[0].section == "xyz");
     assert(expectedResults[0].aggregates[0].count == 1);
+    assert(expectedResults[0].totalCount == 1);
 
     assert(expectedResults[1].aggregates.size() == 0);
     assert(expectedResults[1].startDate == 35);
     assert(expectedResults[1].endDate == 45);
+    assert(expectedResults[1].totalCount == 0);
     assert(expectedResults[2].aggregates.size() == 0);
     assert(expectedResults[2].startDate == 46);
     assert(expectedResults[2].endDate == 56);
+    assert(expectedResults[2].totalCount == 0);
 
     assert(expectedResults[3].aggregates.size() == 1);
     assert(expectedResults[3].startDate == 57);
     assert(expectedResults[3].endDate == 67);
     assert(expectedResults[3].aggregates[0].section == "efg");
     assert(expectedResults[3].aggregates[0].count == 1);
+    assert(expectedResults[3].totalCount == 1);
 
     assert(logManager.getSize() == 11);
     cout << "STAT PASSED" << endl;
@@ -165,7 +171,6 @@ void TEST_ALERT()
         log.section = "qwe";
         logManager.receiveLog(log, notCareObj, alertIsTriggered, alert);
 
-        cout << "count: " << count << endl;
         if(count == 11) // then a warning alert triggered after it reached the 11th log
         {
             assert(alertIsTriggered == true);

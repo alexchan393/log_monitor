@@ -30,14 +30,14 @@ void LogManager::receiveLog(const Log& log,
 
 void LogManager::purgeData()
 {
-    cout << "before purge size: " << d_logs.size() << endl;
+//    cout << "before purge size: " << d_logs.size() << endl;
     while(d_logs.begin()->second.date < (d_logs.rbegin()->second.date - d_timeToLive))
     {
-        cout << "purged begin() " << d_logs.begin()->second.date
-         << ", last() " << d_logs.rbegin()->second.date << endl;
+  //      cout << "purged begin() " << d_logs.begin()->second.date
+    //     << ", last() " << d_logs.rbegin()->second.date << endl;
         d_logs.erase(d_logs.begin());
     }
-    cout << "after purge size: " << d_logs.size() << endl;
+   // cout << "after purge size: " << d_logs.size() << endl;
 }
 
 int LogManager::getSize()
