@@ -23,6 +23,10 @@ Few important points about the program and design:\
 
 
 Improvement:\
-1- Add more unit test for the out-of-order use case if the requirement is confirmed\
-2- Add MakeFile/CICD related tools (Jenkins, Valgrind, etc)\
-3- \
+1- Add more unit test for the out-of-order use cases once the requirement is confirmed.\
+2- Add MakeFile/CICD related tools. (Jenkins, Valgrind, etc)\
+3- Add GTEST instead of the assert() style setup in the test folder.\
+4- Support for Max/Min/Std, etc for statistic.\
+5- Storage for the statistic and alert.\
+6- Alert need to have follow up action to bring up the awareness.\
+7- Add a web base UI for this tool.\
