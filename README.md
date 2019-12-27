@@ -1,3 +1,5 @@
+What do I need to run this program: unix environment, with g++ install.
+
 How to compile and run:
 ```
 cd src
