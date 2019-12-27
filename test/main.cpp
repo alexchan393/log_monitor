@@ -274,6 +274,8 @@ void TEST_OUT_OF_ORDER_ARRIVAL()
     assert(expectedResults[0].aggregates[0].count == 3);
     assert(expectedResults[0].totalCount == 3);
     assert(logManager.getSize() == 8);
+
+    cout << "STAT OUT OF ORDER ARRIVAL PASSED" << endl;
 }
 
 int main()

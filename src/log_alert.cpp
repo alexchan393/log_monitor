@@ -3,44 +3,49 @@
 
 
 LogAlert::LogAlert(int requestPerSecond)
-:d_requestPerSecond(requestPerSecond),
-d_alertIsSet(false)
+:d_totalLogThreshold(requestPerSecond 
+        * WINDOW_IN_MINUTES * SECOND_IN_MINUTE),
+d_alertIsSet(false),
+d_currentLogItr(),
+d_logCount(-1)
 {}
 
 bool LogAlert::generateAlert(const multimap<long, Log>& logs,
                              Alert& alert)
 {
-    int totalNumRequestThreshold = 
-        d_requestPerSecond * WINDOW_IN_MINUTES * SECOND_IN_MINUTE;
+    if(d_logCount == -1)
+    {
+        // Calling this function the first time
+        d_logCount = 1;
+        d_currentLogItr = logs.begin();
+        return false; 
+    }
 
+    ++d_logCount;
     long mostRecentLogDate = logs.rbegin()->second.date;
-    long start = mostRecentLogDate -
+    long windowStartsAt = mostRecentLogDate -
                      WINDOW_IN_MINUTES * SECOND_IN_MINUTE + 1;
 
-    // lower_bound is binary search which is logN
-    auto beginIter = logs.lower_bound(start);
-    auto endIter = logs.end(); 
-
-    int currentNumRequest = 0;
-    
-    for(auto itr = beginIter; itr != endIter; ++itr)
+    // keep track of a moving window and the count
+    while(d_currentLogItr != logs.end() &&
+            d_currentLogItr->first < windowStartsAt)
     {
-        currentNumRequest += 1;
+        --d_logCount;
+        d_currentLogItr++;
     }
-/*
-    cout << "\nmap size: " << logs.size() << endl;
-    cout << "start: " << start << "---" << "mostRecentLogDate: " << mostRecentLogDate << endl;
-    cout << "currentNumRequest: " << currentNumRequest << endl;
-    cout << "TotalNumRequestThreshold: " << totalNumRequestThreshold << endl;*/
 
-    if(!d_alertIsSet && currentNumRequest > totalNumRequestThreshold)
+/*
+    cout << "windowStartsAt: " << windowStartsAt << " <---> " << " mostRecentLogDate: " << mostRecentLogDate << endl;
+    cout << "d_logCount: " << d_logCount << endl;*/
+
+    if(!d_alertIsSet && d_logCount > d_totalLogThreshold)
     {
         alert.state = Alert::WARNING;
         alert.when = mostRecentLogDate;
         d_alertIsSet = true;
         return true;
     }
-    else if(d_alertIsSet && currentNumRequest <= totalNumRequestThreshold)
+    else if(d_alertIsSet && d_logCount <= d_totalLogThreshold)
     {
         alert.state = Alert::RECOVERED;
         alert.when = mostRecentLogDate;

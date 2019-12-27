@@ -20,8 +20,10 @@ class LogAlert
         bool generateAlert(const multimap<long, Log>& logs,
                            Alert& alert);
     private:
-        int d_requestPerSecond;
+        int d_totalLogThreshold;
         bool d_alertIsSet;
+        multimap<long, Log>::const_iterator d_currentLogItr;
+        int d_logCount;
 };
 
 #endif
