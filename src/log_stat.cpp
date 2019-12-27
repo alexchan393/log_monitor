@@ -11,14 +11,16 @@ LogStat::LogStat(int statInterval)
 void LogStat::generateStats(const multimap<long, Log>& logs,
                             vector<Interval>& stats)
 {
+    if(logs.empty())
+    {
+        cout << "logs is empty, unexpected error" << endl; 
+        return;
+    }
+
     stats.clear();
     if(d_lastEndTime == UNSET && !logs.empty())
     {
         d_lastEndTime = logs.begin()->second.date;
-    }
-    else if(logs.empty())
-    {
-        cout << "unexpected error" << endl;
     }
 
     long timeDiff = logs.rbegin()->second.date - d_lastEndTime;
@@ -52,6 +54,9 @@ void LogStat::calculateStat(long start,
 
     unordered_map<string, int> sectionAndCounts;
 
+    // both lower_bound / upper_bound do binary search hence they are logN
+    // this can be further optimized if we keep a member variable for the iterator that point the previous d_lastEndTime
+    // but this might create complexity when the log arrival is out-of-order
     auto beginIter = logs.lower_bound(start);
     auto endIter = logs.upper_bound(end);
 
@@ -62,7 +67,7 @@ void LogStat::calculateStat(long start,
         sectionAndCounts[itr->second.section]++;
     }
 
-    // nlogK for aggregation
+    // Use a min heap so we can get NlogK for getting the top K hits section
     priority_queue<Aggregate ,vector<Aggregate>, greater<Aggregate>> pq;
     for(auto& x: sectionAndCounts) 
     {

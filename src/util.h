@@ -26,6 +26,17 @@ struct Log
 	string section;
 	int status;
 	int bytes;
+    Log()
+    {}
+    Log(string a, string b, string c, long l, string d, int i, int i2)
+        :remoteHost(a),
+         rfc931(b),
+         authuser(c),
+         date(l),
+         section(d),
+         status(i),
+         bytes(i2)
+    {}
 };
 
 struct Aggregate

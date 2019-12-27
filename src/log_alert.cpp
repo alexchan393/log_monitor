@@ -15,8 +15,9 @@ bool LogAlert::generateAlert(const multimap<long, Log>& logs,
 
     long mostRecentLogDate = logs.rbegin()->second.date;
     long start = mostRecentLogDate -
-                     WINDOW_IN_MINUTES * SECOND_IN_MINUTE;
+                     WINDOW_IN_MINUTES * SECOND_IN_MINUTE + 1;
 
+    // lower_bound is binary search which is logN
     auto beginIter = logs.lower_bound(start);
     auto endIter = logs.end(); 
 
@@ -26,6 +27,7 @@ bool LogAlert::generateAlert(const multimap<long, Log>& logs,
     {
         currentNumRequest += 1;
     }
+
     cout << "map size: " << logs.size() << endl;
     cout << "start: " << start << "---" << "mostRecentLogDate: " << mostRecentLogDate << endl;
     cout << "currentNumRequest: " << currentNumRequest << endl;

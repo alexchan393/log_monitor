@@ -110,7 +110,8 @@ void TEST_ALERT()
     
     long START = 0;
     // 1(log per second), this setup triggers alert at the threshold of 120 logs in 2 mins
-    LogManager logManager(10, 1);
+    int notCareObjInt = 10;
+    LogManager logManager(notCareObjInt, 1);
     Log log;
     log.date = START;
     log.section = "abc";
@@ -119,23 +120,22 @@ void TEST_ALERT()
     int count = 140;
     while(count != 0)
     {
-        log.date += 1; // let say 1 request every second
+        log.date += 1; // let say 1 request every second, 
         log.section = "abc";
         vector<Interval> notCareObj;
         logManager.receiveLog(log, notCareObj, alertIsTriggered, alert);
 
-        if(log.date - START == 121)  // then a warning alert triggered at 121 second
-        {
-            assert(alertIsTriggered == true);
-            assert(alert.state == Alert::WARNING);
-            assert(alert.when == 121);
-        }
-        else
-            assert(alertIsTriggered == false);
+        assert(alertIsTriggered == false); // no alert triggered because we set the rate to be 1 request/second
 
         --count;
     }
     assert(logManager.getSize() == 140);
+
+    // we send another log at the same time
+    logManager.receiveLog(log, notCareObj, alertIsTriggered, alert);
+    assert(alertIsTriggered == true);  // now we pass the threshold and warning alert is triggered
+    assert(alert.state == Alert::WARNING);
+    assert(alert.when == 140); 
 
     count = 10;
     while(count != 0)
@@ -156,7 +156,7 @@ void TEST_ALERT()
         --count;
     }
 
-    assert(logManager.getSize() == 150);
+    assert(logManager.getSize() == 151);
 
     count = 20;
     while(count != 0)
