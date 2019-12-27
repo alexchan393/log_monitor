@@ -147,6 +147,7 @@ void TEST_ALERT()
     assert(alertIsTriggered == true);  // now we pass the threshold and warning alert is triggered
     assert(alert.state == Alert::WARNING);
     assert(alert.when == 140); 
+    assert(alert.logCount == 121); 
 
     count = 10;
     while(count != 0)
@@ -160,6 +161,7 @@ void TEST_ALERT()
             assert(alertIsTriggered == true);
             assert(alert.state == Alert::RECOVERED);
             assert(alert.when == 142);
+            assert(alert.logCount == 120); 
         }
         else
             assert(alertIsTriggered == false);
@@ -181,6 +183,7 @@ void TEST_ALERT()
             assert(alertIsTriggered == true);
             assert(alert.state == Alert::WARNING);
             assert(alert.when == 160);
+            assert(alert.logCount == 121); 
         }
         else
             assert(alertIsTriggered == false);
@@ -195,6 +198,7 @@ void TEST_ALERT()
     assert(alertIsTriggered == true);
     assert(alert.state == Alert::RECOVERED);
     assert(alert.when == 1160);
+    assert(alert.logCount == 1); 
 
     // All previous logs were purged because they were 120 seconds older than the most recent one (1160)
     assert(logManager.getSize() == 1);

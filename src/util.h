@@ -15,6 +15,7 @@ struct Alert
     };
     State state;
     long when;
+    int logCount;
 };
 
 struct Log

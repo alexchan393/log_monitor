@@ -42,6 +42,7 @@ bool LogAlert::generateAlert(const multimap<long, Log>& logs,
     {
         alert.state = Alert::WARNING;
         alert.when = mostRecentLogDate;
+        alert.logCount = d_logCount;
         d_alertIsSet = true;
         return true;
     }
@@ -49,6 +50,7 @@ bool LogAlert::generateAlert(const multimap<long, Log>& logs,
     {
         alert.state = Alert::RECOVERED;
         alert.when = mostRecentLogDate;
+        alert.logCount = d_logCount;
         d_alertIsSet = false;
         return true;
     }

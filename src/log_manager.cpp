@@ -6,11 +6,11 @@ LogManager::LogManager(int statInterval,
 :d_logStat(statInterval),
 d_logAlert(alertAveragePerSecond),
 
-// We pick the max across statInterval (for example: 10 seconds in the spec) and 
-// alert threshold count (for example: 1200 seconds in the spec), then multiply that
-// number by 2, to account for out-of-order log arrival
+// We pick the max between statInterval (for example: 10 seconds in the spec) and 
+// alert threshold (for example: 120 seconds in the spec), then multiply that
+// number by 2, to give some buffer
 d_timeToLive((max(statInterval, 
-                 alertAveragePerSecond*SECOND_IN_MINUTE*WINDOW_IN_MINUTES))*2)
+                  SECOND_IN_MINUTE*WINDOW_IN_MINUTES))*2)
 {
 }
 
