@@ -18,6 +18,9 @@ class LogStat
                            vector<Interval>& stats);
     private:
         int d_interval;
+
+        // use this to keep track of the previous end time, so that it knows
+        // when to collect the new 10 seconds information
         long d_lastEndTime;
     private:
         void calculateStat(long start,

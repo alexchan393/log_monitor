@@ -18,9 +18,12 @@ void LogStat::generateStats(const multimap<long, Log>& logs,
     }
 
     stats.clear();
-    if(d_lastEndTime == UNSET && !logs.empty())
+    if(d_lastEndTime == UNSET)
     {
-        d_lastEndTime = logs.begin()->second.date;
+        if(logs.rbegin()->second.date - logs.begin()->second.date < d_interval)
+            return;
+        else
+            d_lastEndTime = logs.begin()->second.date;
     }
 
     long timeDiff = logs.rbegin()->second.date - d_lastEndTime;
@@ -58,14 +61,12 @@ void LogStat::calculateStat(long start,
 
     // both lower_bound / upper_bound do binary search hence they are logN
     // this can be further optimized if we keep a member variable for the iterator that point the previous d_lastEndTime
-    // but this might create complexity when the log arrival is out-of-order
     auto beginIter = logs.lower_bound(start);
     auto endIter = logs.upper_bound(end);
 
     for(auto itr = beginIter; itr != endIter; ++itr)
     {
-      //  cout << "itr: " << itr->first << " : " 
-        //    << itr->second.date << endl;
+ //       cout << "itr: " << itr->first << endl;
         sectionAndCounts[itr->second.section]++;
         ++totalCount;
     }
